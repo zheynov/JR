@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/TEMP.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level31/lesson15/big01/Archiver.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level31/lesson15/big01/FileManager.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level31/lesson15/big01/FileProperties.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level31/lesson15/big01/ZipFileManager.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level31/lesson15/big01/command/ExitCommand.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level31/lesson15/big01/command/ZipAddCommand.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level31/lesson15/big01/command/ZipCommand.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level31/lesson15/big01/command/ZipContentCommand.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level31/lesson15/big01/command/ZipCreateCommand.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level31/lesson15/big01/command/ZipExtractCommand.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level31/lesson15/big01/command/ZipRemoveCommand.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level32/lesson02/task01/Solution.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level32/lesson15/big01/Controller.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level32/lesson15/big01/MenuHelper.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level32/lesson15/big01/View.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level33/lesson15/big01/Solution.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level38/lesson10/home01/ReflectionAnnotationUtil.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/com/javarush/test/level38/lesson10/home01/Solution.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/temps/Train.java" charset="windows-1251" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>
