@@ -10,4 +10,5 @@ public class Solution
     {
         System.out.println("Я не хочу изучать Java, я хочу большую зарплату");
     }
+    //chacha
 }
