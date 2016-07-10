@@ -39,8 +39,8 @@ public class LogParser implements IPQuery {
     @Override
     public Set<String> getIPsForUser(String user, Date after, Date before) { // IP addressess, с которых работал переданный пользователь.
 
-        if (user == null) return new HashSet<>();
 
+        if (user==null) return new HashSet<>();
         Set<String> ipsForUser = new HashSet<>();
 
         for (String line : getLines(logDir, after, before)) {
@@ -68,7 +68,7 @@ public class LogParser implements IPQuery {
             String eventTemp = line.split("\t")[3].trim().split(" ")[0];
 
 
-            if (event != null && eventTemp.equalsIgnoreCase(event.name()))
+            if (event != null && eventTemp.equals(event.name()))
                 ipsForEvent.add(userIP);
         }
         return ipsForEvent;
@@ -85,13 +85,13 @@ public class LogParser implements IPQuery {
 
             String statusTemp = line.split("\t")[4].trim();
 
-            if (status != null && statusTemp.equalsIgnoreCase(status.name()))
+            if (status != null && statusTemp.equals(status.name()))
                 ipsForStatus.add(userIP);
         }
         return ipsForStatus;
     }
 
-    private List<String> getLines(Path logDir, Date after, Date before) {
+    private static List<String> getLines(Path logDir, Date after, Date before) {
 
         List<File> directoryLogs = new ArrayList<>();
 
