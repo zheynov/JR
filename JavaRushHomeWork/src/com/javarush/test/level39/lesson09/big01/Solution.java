@@ -9,6 +9,7 @@ public class Solution {
 
         LogParser logParser = new LogParser(Paths.get("C:\\Users\\Redlaw\\IdeaProjects\\JR\\JavaRushHomeWork\\src\\com\\javarush\\test\\level39\\lesson09\\big01\\logs"));
 
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         for(String s : logParser.getIPsForUser("Eduard Petrovich Morozko", dateFormat.parse("05.01.2021 20:22:55"), null))
             System.out.println(s + " \n --------forUser----------- \n" +
