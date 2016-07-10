@@ -17,18 +17,19 @@ public class LogParser implements IPQuery {
     }
 
     @Override
-    public int getNumberOfUniqueIPs(Date after, Date before) {
+    public int getNumberOfUniqueIPs(Date after, Date before) {  // возвращет количество уникальных IP адресов за выбранный перио
 
         return getUniqueIPs(after, before).size();
     }
 
-
     @Override
-    public Set<String> getUniqueIPs(Date after, Date before) {
+    public Set<String> getUniqueIPs(Date after, Date before) {  // множество, содержащее все неповторяющиеся IP
 
         Set<String> ips = new HashSet<>();
 
         for (String line : getLines(logDir, after, before)) {
+
+            line = line.replaceAll("[A-z]", "");
 
             ips.add(line.substring(0, line.indexOf("\t")));
         }
@@ -36,21 +37,59 @@ public class LogParser implements IPQuery {
     }
 
     @Override
-    public Set<String> getIPsForUser(String user, Date after, Date before) {
-        return null;
+    public Set<String> getIPsForUser(String user, Date after, Date before) { // IP addressess, с которых работал переданный пользователь.
+
+        if (user == null) return new HashSet<>();
+
+        Set<String> ipsForUser = new HashSet<>();
+
+        for (String line : getLines(logDir, after, before)) {
+
+            String userIP = line.substring(0, line.indexOf("\t"));
+
+            String tempUser = line.split("\t")[1];
+
+            if (user != null && user.equalsIgnoreCase(tempUser))
+                ipsForUser.add(userIP);
+        }
+        return ipsForUser;
     }
 
 
     @Override
-    public Set<String> getIPsForEvent(Event event, Date after, Date before) {
-        return null;
+    public Set<String> getIPsForEvent(Event event, Date after, Date before) { // возвращает IP, с которых было произведено переданное событие
+
+        Set<String> ipsForEvent = new HashSet<>();
+
+        for (String line : getLines(logDir, after, before)) {
+
+            String userIP = line.substring(0, line.indexOf("\t"));
+
+            String eventTemp = line.split("\t")[3].trim().split(" ")[0];
+
+
+            if (event != null && eventTemp.equalsIgnoreCase(event.name()))
+                ipsForEvent.add(userIP);
+        }
+        return ipsForEvent;
     }
 
     @Override
-    public Set<String> getIPsForStatus(Status status, Date after, Date before) {
-        return null;
-    }
+    public Set<String> getIPsForStatus(Status status, Date after, Date before) {  // возвращает IP, события с которых закончилось переданным статусом
 
+        Set<String> ipsForStatus = new HashSet<>();
+
+        for (String line : getLines(logDir, after, before)) {
+
+            String userIP = line.substring(0, line.indexOf("\t"));
+
+            String statusTemp = line.split("\t")[4].trim();
+
+            if (status != null && statusTemp.equalsIgnoreCase(status.name()))
+                ipsForStatus.add(userIP);
+        }
+        return ipsForStatus;
+    }
 
     private List<String> getLines(Path logDir, Date after, Date before) {
 
@@ -69,31 +108,30 @@ public class LogParser implements IPQuery {
             try (BufferedReader br = new BufferedReader(new FileReader(directoryLog))) {
 
                 String line;
+
                 while ((line = br.readLine()) != null) {
 
-                    String tempLine = line.substring(14, line.length()).replaceAll("[A-z]", "").trim();
+                    String[] tempLine = line.split("\t");
 
-                    if (tempLine.contains("\t")) {
-                        tempLine = tempLine.split("\t")[0];
-                    }
 
-                    String s = tempLine;
+                    String dateFormatted = tempLine[2];
+
                     SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.ENGLISH);
 
                     Date docDate = null;
                     try {
-                        docDate = format.parse(s);
+                        docDate = format.parse(dateFormatted);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
 
                     if (before == null && after == null) {
                         result.add(line);
-                    } else if (before == null && (after.after(docDate) || after.compareTo(docDate) == 0)) {
+                    } else if (before == null && after != null && docDate.getTime() >= after.getTime()) {
                         result.add(line);
-                    } else if (after == null && (before.before(docDate) || (before.compareTo(docDate) == 0))) {
+                    } else if (after == null && before != null &&  docDate.getTime() >=before.getTime()) {
                         result.add(line);
-                    } else if (before != null && after != null && before.before(docDate) && after.after(docDate)) {
+                    } else if (before != null && after != null && after.getTime() <= docDate.getTime() && before.getTime() >= docDate.getTime()) {
                         result.add(line);
                     }
                 }
