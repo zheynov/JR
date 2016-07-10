@@ -70,7 +70,7 @@ public class LogParser implements IPQuery {
     }
 
     @Override
-    public Set<String> getIPsForStatus(Status status, Date after, Date before) {  // возвращает IP, события с которых закончилось переданным статусом
+    public Set<String> getIPsForStatus(Status status, Date after, Date before) {
 
         Set<String> ipsForStatus = new HashSet<>();
 
