@@ -124,9 +124,9 @@ public class LogParser implements IPQuery {
                         result.add(line);
                     } else if (before == null && after != null && docDate.getTime() >= after.getTime()) {
                         result.add(line);
-                    } else if (after == null && before != null &&  docDate.getTime() >=before.getTime()) {
+                    } else if (after == null && before != null && docDate.getTime() <= before.getTime()) {
                         result.add(line);
-                    } else if (before != null && after != null && after.getTime() <= docDate.getTime() && before.getTime() >= docDate.getTime()) {
+                    } else if (before != null && after != null && docDate.getTime() >= after.getTime() && docDate.getTime() <= before.getTime()) {
                         result.add(line);
                     }
                 }
