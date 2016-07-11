@@ -1,3 +1,4 @@
+
 package com.javarush.test.level39.lesson09.big01;
 
 import com.javarush.test.level39.lesson09.big01.query.DateQuery;
@@ -304,11 +305,12 @@ public class LogParser implements IPQuery, UserQuery, DateQuery
         Date tempdate = null;
         for (String line : getLines(logDir, after, before))
         {
-            if (tempdate != null && line.split("\t")[1].equals(user))
+            if (tempdate != null && line.split("\t")[1].equals(user) && line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("LOGIN"))
             {
                 if (tempdate.getTime() > format.parse(line.split("\t")[2].trim()).getTime())
                     tempdate = format.parse(line.split("\t")[2].trim());
-            } else if (line.split("\t")[1].equals(user)) tempdate = format.parse(line.split("\t")[2].trim());
+            } else if (tempdate == null && line.split("\t")[1].equals(user) && line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("LOGIN"))
+                tempdate = format.parse(line.split("\t")[2].trim());
         }
         return tempdate;
     }
@@ -326,7 +328,8 @@ public class LogParser implements IPQuery, UserQuery, DateQuery
             {
                 if (tempdate.getTime() > format.parse(line.split("\t")[2].trim()).getTime())
                     tempdate = format.parse(line.split("\t")[2].trim());
-            } else if (line.split("\t")[1].equals(user) && task == Integer.parseInt(taskNumber) && line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("SOLVE_TASK"))
+            } else if (!taskNumber.isEmpty() && line.split("\t")[1].equals(user) &&
+                    task == Integer.parseInt(taskNumber) && line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("SOLVE_TASK"))
                 tempdate = format.parse(line.split("\t")[2].trim());
         }
         return tempdate;

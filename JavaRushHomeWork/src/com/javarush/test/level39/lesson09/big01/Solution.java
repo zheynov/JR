@@ -8,6 +8,10 @@ public class Solution
     public static void main(String[] args) throws ParseException
     {
         LogParser logParser = new LogParser(Paths.get("D:\\JAVA\\JavaRushHomeWork\\src\\com\\javarush\\test\\level39\\lesson09\\big01\\logs"));
-        System.out.println(logParser.getDatesWhenUserDownloadedPlugin("Eduard Petrovich Morozko", null, null));
+        System.out.println(logParser.getDateWhenUserSolvedTask("Vasya Pupkin", 18, null, null));
+
+      //  System.out.println(logParser.getDatesWhenErrorHappened(null, null));
+
+
     }
 }
