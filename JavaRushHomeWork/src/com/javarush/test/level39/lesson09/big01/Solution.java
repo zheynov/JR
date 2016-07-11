@@ -8,8 +8,8 @@ public class Solution {
     public static void main(String[] args) {
         LogParser logParser = new LogParser(Paths.get("C:\\Users\\Redlaw\\IdeaProjects\\JR\\JavaRushHomeWork\\src\\com\\javarush\\test\\level39\\lesson09\\big01\\logs"));
 
-       System.out.println(logParser.getAllSolvedTasksAndTheirNumber(null, null));
+       //System.out.println(logParser.getAllDoneTasksAndTheirNumber(null, null));
 
-        //  System.out.println(logParser.getErrorEvents(null, null));
+          System.out.println(logParser.getNumberOfSuccessfulAttemptToSolveTask(18, null, null));
     }
 }

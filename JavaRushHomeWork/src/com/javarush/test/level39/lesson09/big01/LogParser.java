@@ -395,17 +395,15 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery {
     @Override
     public Map<Integer, Integer> getAllSolvedTasksAndTheirNumber(Date after, Date before) { // должен возвращать мапу (номер_задачи : количество_попыток_решить_ее).
         Map<Integer, Integer> result = new HashMap<>();
-        int count = 1;
         for (String line : getLines(logDir, after, before)) {
             String taskNumber = line.split("\t")[3].trim().replaceAll("[A-z]", "").trim();
             if (taskNumber.isEmpty()) continue;
             int task = Integer.parseInt(taskNumber);
 
             if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("SOLVE_TASK")) {
-                if (!result.containsKey(task)) result.put(task, count);
+                if (!result.containsKey(task)) result.put(task, 1);
                 else {
-                    count++;
-                    result.put(task, count);
+                    result.put(task, result.get(task)+1);
                 }
             }
         }
@@ -415,17 +413,15 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery {
     @Override
     public Map<Integer, Integer> getAllDoneTasksAndTheirNumber(Date after, Date before) { // должен возвращать мапу (номер_задачи : сколько_раз_ее_решили).
         Map<Integer, Integer> result = new HashMap<>();
-        int count = 1;
         for (String line : getLines(logDir, after, before)) {
             String taskNumber = line.split("\t")[3].trim().replaceAll("[A-z]", "").trim();
             if (taskNumber.isEmpty()) continue;
             int task = Integer.parseInt(taskNumber);
 
             if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("DONE_TASK") && line.split("\t")[4].trim().equals("OK")) {
-                if (!result.containsKey(task)) result.put(task, count);
+                if (!result.containsKey(task)) result.put(task, 1);
                 else {
-                    count++;
-                    result.put(task, count);
+                    result.put(task, result.get(task)+1);
                 }
             }
         }
