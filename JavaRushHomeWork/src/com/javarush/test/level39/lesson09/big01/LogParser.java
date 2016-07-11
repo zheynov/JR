@@ -1,7 +1,7 @@
-
 package com.javarush.test.level39.lesson09.big01;
 
 import com.javarush.test.level39.lesson09.big01.query.DateQuery;
+import com.javarush.test.level39.lesson09.big01.query.EventQuery;
 import com.javarush.test.level39.lesson09.big01.query.IPQuery;
 import com.javarush.test.level39.lesson09.big01.query.UserQuery;
 
@@ -11,12 +11,48 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class LogParser implements IPQuery, UserQuery, DateQuery {
+public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery {
     private Path logDir;
     private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.ENGLISH);
 
     public LogParser(Path logDir) {
         this.logDir = logDir;
+    }
+
+    private List<String> getLines(Path logDir, Date after, Date before) {
+        List<File> directoryLogs = new ArrayList<>();
+        List<String> result = new ArrayList<>();
+        for (File file : logDir.toFile().listFiles()) {
+            if (file.isFile() && file.getName().endsWith(".log"))
+                directoryLogs.add(file);
+        }
+        for (File directoryLog : directoryLogs) {
+            try (BufferedReader br = new BufferedReader(new FileReader(directoryLog))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] tempLine = line.split("\t");
+                    String dateFormatted = tempLine[2];
+                    Date docDate = null;
+                    try {
+                        docDate = format.parse(dateFormatted);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    if (before == null && after == null) {
+                        result.add(line);
+                    } else if (before == null && after != null && docDate.getTime() >= after.getTime()) {
+                        result.add(line);
+                    } else if (after == null && before != null && docDate.getTime() <= before.getTime()) {
+                        result.add(line);
+                    } else if (before != null && after != null && docDate.getTime() >= after.getTime() && docDate.getTime() <= before.getTime()) {
+                        result.add(line);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     @Override
@@ -67,42 +103,6 @@ public class LogParser implements IPQuery, UserQuery, DateQuery {
                 ipsForStatus.add(userIP);
         }
         return ipsForStatus;
-    }
-
-    private List<String> getLines(Path logDir, Date after, Date before) {
-        List<File> directoryLogs = new ArrayList<>();
-        List<String> result = new ArrayList<>();
-        for (File file : logDir.toFile().listFiles()) {
-            if (file.isFile() && file.getName().endsWith(".log"))
-                directoryLogs.add(file);
-        }
-        for (File directoryLog : directoryLogs) {
-            try (BufferedReader br = new BufferedReader(new FileReader(directoryLog))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    String[] tempLine = line.split("\t");
-                    String dateFormatted = tempLine[2];
-                    Date docDate = null;
-                    try {
-                        docDate = format.parse(dateFormatted);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    if (before == null && after == null) {
-                        result.add(line);
-                    } else if (before == null && after != null && docDate.getTime() >= after.getTime()) {
-                        result.add(line);
-                    } else if (after == null && before != null && docDate.getTime() <= before.getTime()) {
-                        result.add(line);
-                    } else if (before != null && after != null && docDate.getTime() >= after.getTime() && docDate.getTime() <= before.getTime()) {
-                        result.add(line);
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return result;
     }
 
     @Override
@@ -312,5 +312,122 @@ public class LogParser implements IPQuery, UserQuery, DateQuery {
                 userDwnldDates.add(format.parse(line.split("\t")[2].trim()));
         }
         return userDwnldDates;
+    }
+
+    @Override
+    public int getNumberOfAllEvents(Date after, Date before) { // должен возвращать количество различных типов событий за указанный период.
+        return getAllEvents(after, before).size();
+    }
+
+    @Override
+    public Set<Event> getAllEvents(Date after, Date before) { // должен возвращать события за указанный период.
+        Set<Event> allEvents = new HashSet<>();
+        for (String line : getLines(logDir, after, before)) {
+            allEvents.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
+        }
+        return allEvents;
+    }
+
+    @Override
+    public Set<Event> getEventsForIP(String ip, Date after, Date before) { // должен возвращать события, которые происходили с указанного IP
+        Set<Event> allEventsForIP = new HashSet<>();
+        for (String line : getLines(logDir, after, before)) {
+            if (ip.equals(line.split("\t")[0].trim()))
+                allEventsForIP.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
+        }
+        return allEventsForIP;
+    }
+
+    @Override
+    public Set<Event> getEventsForUser(String user, Date after, Date before) { // должен возвращать события, которые инициировал определенный пользователь
+        Set<Event> allEventsForUser = new HashSet<>();
+        for (String line : getLines(logDir, after, before)) {
+            if (user.equals(line.split("\t")[1].trim()))
+                allEventsForUser.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
+        }
+        return allEventsForUser;
+    }
+
+    @Override
+    public Set<Event> getFailedEvents(Date after, Date before) { // должен возвращать события, которые не выполнились
+        Set<Event> allFailedEvents = new HashSet<>();
+        for (String line : getLines(logDir, after, before)) {
+            if ("FAILED".equals(line.split("\t")[4].trim()))
+                allFailedEvents.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
+        }
+        return allFailedEvents;
+    }
+
+    @Override
+    public Set<Event> getErrorEvents(Date after, Date before) { // должен возвращать события, которые завершились ошибкой
+        Set<Event> allFailedEvents = new HashSet<>();
+        for (String line : getLines(logDir, after, before)) {
+            if ("ERROR".equals(line.split("\t")[4].trim()))
+                allFailedEvents.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
+        }
+        return allFailedEvents;
+    }
+
+    @Override
+    public int getNumberOfAttemptToSolveTask(int task, Date after, Date before) { // должен возвращать количество попыток решить определенную задачу
+        int count = 0;
+        for (String line : getLines(logDir, after, before)) {
+            String taskNumber = line.split("\t")[3].trim().replaceAll("[A-z]", "").trim();
+            if (!taskNumber.isEmpty() && Integer.parseInt(taskNumber) == task && line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("SOLVE_TASK"))
+                count++;
+        }
+        return count;
+    }
+
+    @Override
+    public int getNumberOfSuccessfulAttemptToSolveTask(int task, Date after, Date before) { // должен возвращать количество успешных решений определенной задачи
+        int count = 0;
+        for (String line : getLines(logDir, after, before)) {
+            String taskNumber = line.split("\t")[3].trim().replaceAll("[A-z]", "").trim();
+            if (!taskNumber.isEmpty() && Integer.parseInt(taskNumber) == task && line.split("\t")[4].trim().equals("OK")
+                    && line.split("\t")[3].trim().replaceAll("[^A-z]", "").equals("SOLVE_TASK"))
+                count++;
+        }
+        return count;
+    }
+
+    @Override
+    public Map<Integer, Integer> getAllSolvedTasksAndTheirNumber(Date after, Date before) { // должен возвращать мапу (номер_задачи : количество_попыток_решить_ее).
+        Map<Integer, Integer> result = new HashMap<>();
+        int count = 1;
+        for (String line : getLines(logDir, after, before)) {
+            String taskNumber = line.split("\t")[3].trim().replaceAll("[A-z]", "").trim();
+            if (taskNumber.isEmpty()) continue;
+            int task = Integer.parseInt(taskNumber);
+
+            if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("SOLVE_TASK")) {
+                if (!result.containsKey(task)) result.put(task, count);
+                else {
+                    count++;
+                    result.put(task, count);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Map<Integer, Integer> getAllDoneTasksAndTheirNumber(Date after, Date before) { // должен возвращать мапу (номер_задачи : сколько_раз_ее_решили).
+        Map<Integer, Integer> result = new HashMap<>();
+        int count = 1;
+        for (String line : getLines(logDir, after, before)) {
+            String taskNumber = line.split("\t")[3].trim().replaceAll("[A-z]", "").trim();
+            if (taskNumber.isEmpty()) continue;
+            int task = Integer.parseInt(taskNumber);
+
+            if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("DONE_TASK") && line.split("\t")[4].trim().equals("OK")) {
+                if (!result.containsKey(task)) result.put(task, count);
+                else {
+                    count++;
+                    result.put(task, count);
+                }
+            }
+        }
+        return result;
     }
 }

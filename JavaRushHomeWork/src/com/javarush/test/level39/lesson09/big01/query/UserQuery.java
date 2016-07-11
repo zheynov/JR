@@ -15,5 +15,4 @@ public interface UserQuery {
     Set<String> getSolvedTaskUsers(Date after, Date before, int task);
     Set<String> getDoneTaskUsers(Date after, Date before);
     Set<String> getDoneTaskUsers(Date after, Date before, int task);
-
 }
