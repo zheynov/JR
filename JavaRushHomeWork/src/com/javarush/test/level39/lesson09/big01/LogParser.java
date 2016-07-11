@@ -97,7 +97,6 @@ public class LogParser implements IPQuery, UserQuery, DateQuery
                 {
                     String[] tempLine = line.split("\t");
                     String dateFormatted = tempLine[2];
-                    SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.ENGLISH);
                     Date docDate = null;
                     try
                     {
@@ -349,14 +348,26 @@ public class LogParser implements IPQuery, UserQuery, DateQuery
     }
 
     @Override
-    public Set<Date> getDatesWhenUserWroteMessage(String user, Date after, Date before)
+    public Set<Date> getDatesWhenUserWroteMessage(String user, Date after, Date before) throws ParseException
     { // должен возвращать даты, когда пользователь написал сообщение
-        return null;
+        Set<Date> userWrMesDates = new HashSet<>();
+        for (String line : getLines(logDir, after, before))
+        {
+            if (line.split("\t")[1].equals(user) && line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("WRITE_MESSAGE"))
+                userWrMesDates.add(format.parse(line.split("\t")[2].trim()));
+        }
+        return userWrMesDates;
     }
 
     @Override
-    public Set<Date> getDatesWhenUserDownloadedPlugin(String user, Date after, Date before)
-    {
-        return null;
+    public Set<Date> getDatesWhenUserDownloadedPlugin(String user, Date after, Date before) throws ParseException
+    { // должен возвращать даты, когда пользователь скачал плагин
+        Set<Date> userDwnldDates = new HashSet<>();
+        for (String line : getLines(logDir, after, before))
+        {
+            if (line.split("\t")[1].equals(user) && line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("DOWNLOAD_PLUGIN"))
+                userDwnldDates.add(format.parse(line.split("\t")[2].trim()));
+        }
+        return userDwnldDates;
     }
 }
