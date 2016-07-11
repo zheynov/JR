@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery {
+
     private Path logDir;
     private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.ENGLISH);
 
