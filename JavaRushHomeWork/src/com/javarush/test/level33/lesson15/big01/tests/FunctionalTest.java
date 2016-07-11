@@ -1,4 +1,3 @@
-/*
 package com.javarush.test.level33.lesson15.big01.tests;
 
 import com.javarush.test.level33.lesson15.big01.Helper;
@@ -84,4 +83,3 @@ public class FunctionalTest
 
 
 }
-*/
