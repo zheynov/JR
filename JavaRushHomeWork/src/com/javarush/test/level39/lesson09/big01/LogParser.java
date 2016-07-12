@@ -511,7 +511,7 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
     {
         Set<Object> set = new HashSet<>();
 
-        if (query.equalsIgnoreCase("get ip"))
+        if (query.equals("get ip"))
         {
             for (Object o : getUniqueIPs(null, null))
             {
