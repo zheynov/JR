@@ -375,23 +375,28 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery
     }
 
     @Override
-    public int getNumberOfAllEvents(Date after, Date before) { // должен возвращать количество различных типов событий за указанный период.
+    public int getNumberOfAllEvents(Date after, Date before)
+    { // должен возвращать количество различных типов событий за указанный период.
         return getAllEvents(after, before).size();
     }
 
     @Override
-    public Set<Event> getAllEvents(Date after, Date before) { // должен возвращать события за указанный период.
+    public Set<Event> getAllEvents(Date after, Date before)
+    { // должен возвращать события за указанный период.
         Set<Event> allEvents = new HashSet<>();
-        for (String line : getLines(logDir, after, before)) {
+        for (String line : getLines(logDir, after, before))
+        {
             allEvents.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
         }
         return allEvents;
     }
 
     @Override
-    public Set<Event> getEventsForIP(String ip, Date after, Date before) { // должен возвращать события, которые происходили с указанного IP
+    public Set<Event> getEventsForIP(String ip, Date after, Date before)
+    { // должен возвращать события, которые происходили с указанного IP
         Set<Event> allEventsForIP = new HashSet<>();
-        for (String line : getLines(logDir, after, before)) {
+        for (String line : getLines(logDir, after, before))
+        {
             if (ip.equals(line.split("\t")[0].trim()))
                 allEventsForIP.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
         }
@@ -399,9 +404,11 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery
     }
 
     @Override
-    public Set<Event> getEventsForUser(String user, Date after, Date before) { // должен возвращать события, которые инициировал определенный пользователь
+    public Set<Event> getEventsForUser(String user, Date after, Date before)
+    { // должен возвращать события, которые инициировал определенный пользователь
         Set<Event> allEventsForUser = new HashSet<>();
-        for (String line : getLines(logDir, after, before)) {
+        for (String line : getLines(logDir, after, before))
+        {
             if (user.equals(line.split("\t")[1].trim()))
                 allEventsForUser.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
         }
@@ -409,9 +416,11 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery
     }
 
     @Override
-    public Set<Event> getFailedEvents(Date after, Date before) { // должен возвращать события, которые не выполнились
+    public Set<Event> getFailedEvents(Date after, Date before)
+    { // должен возвращать события, которые не выполнились
         Set<Event> allFailedEvents = new HashSet<>();
-        for (String line : getLines(logDir, after, before)) {
+        for (String line : getLines(logDir, after, before))
+        {
             if ("FAILED".equals(line.split("\t")[4].trim()))
                 allFailedEvents.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
         }
@@ -419,9 +428,11 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery
     }
 
     @Override
-    public Set<Event> getErrorEvents(Date after, Date before) { // должен возвращать события, которые завершились ошибкой
+    public Set<Event> getErrorEvents(Date after, Date before)
+    { // должен возвращать события, которые завершились ошибкой
         Set<Event> allFailedEvents = new HashSet<>();
-        for (String line : getLines(logDir, after, before)) {
+        for (String line : getLines(logDir, after, before))
+        {
             if ("ERROR".equals(line.split("\t")[4].trim()))
                 allFailedEvents.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
         }
@@ -429,9 +440,11 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery
     }
 
     @Override
-    public int getNumberOfAttemptToSolveTask(int task, Date after, Date before) { // должен возвращать количество попыток решить определенную задачу
+    public int getNumberOfAttemptToSolveTask(int task, Date after, Date before)
+    { // должен возвращать количество попыток решить определенную задачу
         int count = 0;
-        for (String line : getLines(logDir, after, before)) {
+        for (String line : getLines(logDir, after, before))
+        {
             String taskNumber = line.split("\t")[3].trim().replaceAll("[A-z]", "").trim();
             if (!taskNumber.isEmpty() && Integer.parseInt(taskNumber) == task && line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("SOLVE_TASK"))
                 count++;
@@ -440,9 +453,11 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery
     }
 
     @Override
-    public int getNumberOfSuccessfulAttemptToSolveTask(int task, Date after, Date before) { // должен возвращать количество успешных решений определенной задачи
+    public int getNumberOfSuccessfulAttemptToSolveTask(int task, Date after, Date before)
+    { // должен возвращать количество успешных решений определенной задачи
         int count = 0;
-        for (String line : getLines(logDir, after, before)) {
+        for (String line : getLines(logDir, after, before))
+        {
             String taskNumber = line.split("\t")[3].trim().replaceAll("[A-z]", "").trim();
             if (!taskNumber.isEmpty() && Integer.parseInt(taskNumber) == task && line.split("\t")[4].trim().equals("OK")
                     && line.split("\t")[3].trim().replaceAll("[^A-z]", "").equals("SOLVE_TASK"))
@@ -452,17 +467,21 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery
     }
 
     @Override
-    public Map<Integer, Integer> getAllSolvedTasksAndTheirNumber(Date after, Date before) { // должен возвращать мапу (номер_задачи : количество_попыток_решить_ее).
+    public Map<Integer, Integer> getAllSolvedTasksAndTheirNumber(Date after, Date before)
+    { // должен возвращать мапу (номер_задачи : количество_попыток_решить_ее).
         Map<Integer, Integer> result = new HashMap<>();
-        for (String line : getLines(logDir, after, before)) {
+        for (String line : getLines(logDir, after, before))
+        {
             String taskNumber = line.split("\t")[3].trim().replaceAll("[A-z]", "").trim();
             if (taskNumber.isEmpty()) continue;
             int task = Integer.parseInt(taskNumber);
 
-            if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("SOLVE_TASK")) {
+            if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("SOLVE_TASK"))
+            {
                 if (!result.containsKey(task)) result.put(task, 1);
-                else {
-                    result.put(task, result.get(task)+1);
+                else
+                {
+                    result.put(task, result.get(task) + 1);
                 }
             }
         }
@@ -470,16 +489,20 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery
     }
 
     @Override
-    public Map<Integer, Integer> getAllDoneTasksAndTheirNumber(Date after, Date before) { // должен возвращать мапу (номер_задачи : сколько_раз_ее_решили).
+    public Map<Integer, Integer> getAllDoneTasksAndTheirNumber(Date after, Date before)
+    { // должен возвращать мапу (номер_задачи : сколько_раз_ее_решили).
         Map<Integer, Integer> result = new HashMap<>();
-        for (String line : getLines(logDir, after, before)) {
+        for (String line : getLines(logDir, after, before))
+        {
             String taskNumber = line.split("\t")[3].trim().replaceAll("[A-z]", "").trim();
             if (taskNumber.isEmpty()) continue;
             int task = Integer.parseInt(taskNumber);
-            if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("DONE_TASK")) {
+            if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("DONE_TASK"))
+            {
                 if (!result.containsKey(task)) result.put(task, 1);
-                else {
-                    result.put(task, result.get(task)+1);
+                else
+                {
+                    result.put(task, result.get(task) + 1);
                 }
             }
         }
