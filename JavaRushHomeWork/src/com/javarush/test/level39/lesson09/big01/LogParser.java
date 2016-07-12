@@ -476,7 +476,6 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery
             String taskNumber = line.split("\t")[3].trim().replaceAll("[A-z]", "").trim();
             if (taskNumber.isEmpty()) continue;
             int task = Integer.parseInt(taskNumber);
-
             if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals("DONE_TASK")) {
                 if (!result.containsKey(task)) result.put(task, 1);
                 else {
