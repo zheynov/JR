@@ -1,9 +1,6 @@
 package com.javarush.test.level39.lesson09.big01;
 
-import com.javarush.test.level39.lesson09.big01.query.DateQuery;
-import com.javarush.test.level39.lesson09.big01.query.EventQuery;
-import com.javarush.test.level39.lesson09.big01.query.IPQuery;
-import com.javarush.test.level39.lesson09.big01.query.UserQuery;
+import com.javarush.test.level39.lesson09.big01.query.*;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -11,7 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery
+public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQuery
 {
     private Path logDir;
     private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.ENGLISH);
@@ -507,5 +504,51 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery
             }
         }
         return result;
+    }
+
+    @Override
+    public Set<Object> execute(String query)
+    {
+        Set<Object> set = new HashSet<>();
+
+        if (query.equalsIgnoreCase("get ip"))
+        {
+            for (Object o : getUniqueIPs(null, null))
+            {
+                set.add(o);
+            }
+        } else if (query.equals("get user"))
+        {
+            for (Object o : getAllUsers())
+            {
+                set.add(o);
+            }
+        } else if (query.equals("get date"))
+        {
+            for (String line : getLines(logDir, null, null))
+            {
+                try
+                {
+                    set.add(format.parse(line.split("\t")[2].trim()));
+                }
+                catch (ParseException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        } else if (query.equals("get event"))
+        {
+            for (Object o : getAllEvents(null, null))
+            {
+                set.add(o);
+            }
+        } else if (query.equals("get status"))
+        {
+            for (String line : getLines(logDir, null, null))
+            {
+                set.add(line.split("\t")[4].trim());
+            }
+        }
+        return set;
     }
 }
