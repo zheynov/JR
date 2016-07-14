@@ -510,6 +510,7 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
     public Set<Object> execute(String query)
     {
         Set<Object> set = new HashSet<>();
+
         if (query.equals("get ip"))
         {
             for (Object o : getUniqueIPs(null, null))
@@ -546,6 +547,213 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
             for (String line : getLines(logDir, null, null))
             {
                 set.add(Status.valueOf(line.split("\t")[4].trim()));
+            }
+        } else if (query.contains("for"))
+        {
+            Date value2 = null;
+            Date value3 = null;
+            String field1 = "";
+            String field2 = "";
+            String value1 = "";
+
+            query = query.trim();
+            String[] fullQuery = query.split("for");
+
+            if (!query.contains("between"))
+
+            {
+                if (fullQuery.length == 2)
+                {
+                    field1 = fullQuery[0].substring(4).trim();
+                    field2 = fullQuery[1].substring(0, fullQuery[1].indexOf("=")).trim();
+                    value1 = fullQuery[1].substring(fullQuery[1].indexOf("=") + 1).trim().replaceAll("\"", "").trim();
+                }
+            } else
+            {
+                field1 = fullQuery[0].substring(4).trim();
+                field2 = fullQuery[1].substring(0, fullQuery[1].indexOf("=")).trim();
+                value1 = fullQuery[1].substring(fullQuery[1].indexOf("=") + 1, fullQuery[1].indexOf("and")).trim().replaceAll("\"", "").trim();
+
+                String datesStroke = fullQuery[1].substring(fullQuery[1].indexOf("between") + 7).replaceAll("\"", "").trim();
+
+                String vl1 = datesStroke.split("and")[0].trim();
+                String vl2 = datesStroke.split("and")[1].trim();
+
+                try
+                {
+                    value2 = format.parse(vl1);
+                    value3 = format.parse(vl2);
+                }
+                catch (ParseException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            if (field1.equals("ip"))
+            {
+                if (field2.equals("user"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[1].contains(value1))
+                            set.add(line.substring(0, line.indexOf("\t")));
+                    }
+
+                } else if (field2.equals("date"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[2].trim().equals(value1))
+                            set.add(line.substring(0, line.indexOf("\t")));
+                    }
+                } else if (field2.equals("event"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals(value1))
+                            set.add(line.substring(0, line.indexOf("\t")));
+                    }
+                } else if (field2.equals("status"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[4].trim().equals(value1))
+                            set.add(line.substring(0, line.indexOf("\t")));
+                    }
+                }
+            } else if (field1.equals("user"))
+            {
+                if (field2.equals("ip"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.substring(0, line.indexOf("\t")).equals(value1))
+                            set.add(line.split("\t")[1]);
+                    }
+
+                } else if (field2.equals("date"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[2].trim().equals(value1))
+                            set.add(line.split("\t")[1]);
+                    }
+                } else if (field2.equals("event"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals(value1))
+                            set.add(line.split("\t")[1]);
+                    }
+                } else if (field2.equals("status"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[4].trim().equals(value1))
+                            set.add(line.split("\t")[1]);
+                    }
+                }
+            } else if (field1.equals("date"))
+            {
+                try
+                {
+                    if (field2.equals("ip"))
+                    {
+                        for (String line : getLines(logDir, value2, value3))
+                        {
+                            if (line.substring(0, line.indexOf("\t")).equals(value1))
+                                set.add(format.parse(line.split("\t")[2].trim()));
+                        }
+                    } else if (field2.equals("user"))
+                    {
+                        for (String line : getLines(logDir, value2, value3))
+                        {
+                            if (line.split("\t")[1].trim().contains(value1))
+                                set.add(format.parse(line.split("\t")[2].trim()));
+                        }
+                    } else if (field2.equals("event"))
+                    {
+                        for (String line : getLines(logDir, value2, value3))
+                        {
+                            if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals(value1))
+                                set.add(format.parse(line.split("\t")[2].trim()));
+                        }
+                    } else if (field2.equals("status"))
+                    {
+                        for (String line : getLines(logDir, value2, value3))
+                        {
+                            if (line.split("\t")[4].trim().equals(value1))
+                                set.add(format.parse(line.split("\t")[2].trim()));
+                        }
+                    }
+                }
+                catch (ParseException e)
+                {
+                    e.printStackTrace();
+                }
+            } else if (field1.equals("event"))
+            {
+                if (field2.equals("ip"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.substring(0, line.indexOf("\t")).equals(value1))
+                            set.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
+                    }
+                } else if (field2.equals("user"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[1].trim().contains(value1))
+                            set.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
+                    }
+                } else if (field2.equals("date"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[2].trim().equals(value1))
+                            set.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
+                    }
+                } else if (field2.equals("status"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[4].trim().equals(value1))
+                            set.add(Event.valueOf(line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim()));
+                    }
+                }
+            } else if (field1.equals("status"))
+            {
+                if (field2.equals("ip"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.substring(0, line.indexOf("\t")).equals(value1))
+                            set.add(Status.valueOf(line.split("\t")[4].trim()));
+                    }
+                } else if (field2.equals("user"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[1].trim().contains(value1))
+                            set.add(Status.valueOf(line.split("\t")[4].trim()));
+                    }
+                } else if (field2.equals("date"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[2].trim().equals(value1))
+                            set.add(Status.valueOf(line.split("\t")[4].trim()));
+                    }
+                } else if (field2.equals("event"))
+                {
+                    for (String line : getLines(logDir, value2, value3))
+                    {
+                        if (line.split("\t")[3].trim().replaceAll("[^A-z]", "").trim().equals(value1))
+                            set.add(Status.valueOf(line.split("\t")[4].trim()));
+                    }
+                }
             }
         }
         return set;
