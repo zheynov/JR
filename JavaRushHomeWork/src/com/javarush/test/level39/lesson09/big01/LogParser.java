@@ -510,7 +510,6 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
     public Set<Object> execute(String query)
     {
         Set<Object> set = new HashSet<>();
-
         if (query.equals("get ip"))
         {
             for (Object o : getUniqueIPs(null, null))
@@ -538,7 +537,7 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
             }
         } else if (query.equals("get event"))
         {
-            for (Object o : getAllEvents(null, null))
+            for (Event o : getAllEvents(null, null))
             {
                 set.add(o);
             }
@@ -546,7 +545,7 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
         {
             for (String line : getLines(logDir, null, null))
             {
-                set.add(line.split("\t")[4].trim());
+                set.add(Status.valueOf(line.split("\t")[4].trim()));
             }
         }
         return set;
